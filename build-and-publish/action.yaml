@@ -3,33 +3,33 @@ description: "Simple action to build a docker image and push it to repository"
 
 runs:
   using: composite
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v2
 
-      - name: Metadata
-        id: meta
-        uses: docker/metadata-action@v3
-        with:
-          images: 715299534867.dkr.ecr.us-east-1.amazonaws.com/metabazer
-          tags: |
-            type=schedule
-            type=ref,event=branch
-            type=ref,event=tag
-            type=ref,event=pr
-            type=sha,format=long,prefix=
+    - name: Metadata
+      id: meta
+      uses: docker/metadata-action@v3
+      with:
+        images: 715299534867.dkr.ecr.us-east-1.amazonaws.com/metabazer
+        tags: |
+          type=schedule
+          type=ref,event=branch
+          type=ref,event=tag
+          type=ref,event=pr
+          type=sha,format=long,prefix=
 
-      - name: Login to AWS ECR
-        uses: docker/login-action@v1
-        with:
-          registry: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
-          username: ${{ secrets.GH_AWS_ACCESS_KEY_ID }}
-          password: ${{ secrets.GH_AWS_SECRET_ACCESS_KEY }}
+    - name: Login to AWS ECR
+      uses: docker/login-action@v1
+      with:
+        registry: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
+        username: ${{ secrets.GH_AWS_ACCESS_KEY_ID }}
+        password: ${{ secrets.GH_AWS_SECRET_ACCESS_KEY }}
 
-      - name: Build and push
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+    - name: Build and push
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
