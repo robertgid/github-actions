@@ -1,6 +1,6 @@
 # image-name GitHub Action
 
-## How the NPM-Version action works
+## How the action works
 
 Because github doesn't have a folder structure of the repositories, which would help us in generating and configuring repositries ( as we did in GitLab ), we have written an action that will generate the information ( from repository name ), which will be needed to create and publish docker images to the image registry.
 
@@ -37,8 +37,9 @@ Examples:
     echo "The image-name was ${{ steps.repo-meta.outputs.image-name }}"
 ```
 
-### Variables
-
-* runtime(optional): Which default docker image to use ( default: node16 )
-* docker(optional): Should the action create DockerFile inside the repository ( default: false )
-* dockerFile(optional): Path to the custom DockerFile
+### Input
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| runtime(optional) | string | node16 | Which default docker image to use |
+| docker(optional) | boolean | false | Should the action create DockerFile inside the repository |
+| dockerFile(optional) | string | | Path to the custom DockerFile |
