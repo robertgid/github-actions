@@ -1,0 +1,30 @@
+name: 'image-name'
+description: 'Generating information used to create and publish images'
+inputs:
+  runtime:
+    description: 'What type of runtime'
+    required: false
+    default: 'node16'
+  docker:
+    description: 'Are we building docker'
+    required: false
+    default: 'false'
+  dockerFile:
+    description: 'Path to the custom docker file'
+    required: false
+outputs:
+  group:
+    description: 'Group name of the image'
+  name:
+    description: 'Name of the image'
+  image-name:
+    description: 'Full name of the image used for uploading to image registry'
+  image-tag:
+    description: 'Tag name/version of the image'
+  namespace: # id of output
+    description: 'Namespace of the image'
+  docker-file: # id of output
+    description: 'Path to the Dockerfile being used to generate the image'
+runs:
+  using: 'node16'
+  main: './dist/index.js'
