@@ -21,9 +21,9 @@ outputs:
     description: 'Full name of the image used for uploading to image registry'
   image-tag:
     description: 'Tag name/version of the image'
-  namespace: # id of output
+  namespace:
     description: 'Namespace of the image'
-  docker-file: # id of output
+  docker-file:
     description: 'Path to the Dockerfile being used to generate the image'
 runs:
   using: 'node16'
