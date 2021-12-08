@@ -9,6 +9,10 @@ module.exports = {
   plugins: [
     '@globalid',
   ],
+  env: {
+    node: true,
+    jest: true,
+  },
   extends: [
     'plugin:@globalid/node-svc',
     'plugin:@globalid/mocha',

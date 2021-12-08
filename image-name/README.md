@@ -20,6 +20,16 @@ Examples:
   Registry path: wallet/block-set
 ```
 
+## How to build and publish new versions
+
+To build the action do the following commands
+```bash
+$ cd image-name
+$ npm install
+$ npm run all
+```
+After this is finshed commit all the changes done in `/dist` folder. This folder is used in the github actions.
+
 ## How to use the action
 
 ```yaml

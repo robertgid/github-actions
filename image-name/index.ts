@@ -1,7 +1,7 @@
-import github from '@actions/github'
-import core from '@actions/core'
-import io from '@actions/io'
-import path from 'path'
+import * as github from '@actions/github'
+import * as core from '@actions/core'
+import * as io from '@actions/io'
+import * as path from 'path'
 
 const logger = console
 
@@ -26,9 +26,6 @@ async function copyDockerFile(runtime: string): Promise<string> {
   return tempFile
 }
 
-// Get the JSON webhook payload for the event that triggered the workflow
-//const payload = JSON.stringify(github.context.payload, undefined, 2)
-//logger.log(`The event payload: ${payload}`);
 async function run(): Promise<void> {
   try {
     const runtime = core.getInput('runtime')
