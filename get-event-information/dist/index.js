@@ -28,12 +28,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const github = __importStar(__nccwpck_require__(5438));
 const core = __importStar(__nccwpck_require__(2186));
-function getBranchFromRef(ref) {
-    return ref.replace(/refs\/(heads|tags)\//, '');
-}
 function run() {
     try {
-        const deployableBranches = core.getInput('deployableBranches');
         if (github.context.payload.repository === undefined) {
             throw new Error('repository missing in the payload');
         }
@@ -46,8 +42,6 @@ function run() {
         const imageName = repoName.substr(idx + 1);
         const fullImageName = `${group}/${imageName}`;
         const shortRef = ref.substring(ref.lastIndexOf('/') + 1);
-        const currentBranchOrTag = getBranchFromRef(ref);
-        const release = deployableBranches.split(',').some(value => currentBranchOrTag.indexOf(value) === 0);
         core.notice(`Ref: ${ref}, short ref: ${shortRef}`);
         const imageTag = ref.startsWith('refs/tags') ? shortRef : github.context.sha;
         core.notice(`Group: ${group}`);
@@ -59,7 +53,6 @@ function run() {
         core.setOutput('image-name', fullImageName);
         core.setOutput('image-tag', imageTag);
         core.setOutput('namespace', group);
-        core.setOutput('release', release);
     }
     catch (error) {
         core.setFailed(error.message);

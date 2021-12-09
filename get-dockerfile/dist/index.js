@@ -52,7 +52,7 @@ function copyDockerFile(runtime) {
         const tempFile = getDockerFilePath();
         core.notice(`temp file: ${tempFile}`);
         core.notice(`setting runtime for: ${runtime}`);
-        yield io.cp(`${__dirname}/docker/${runtime}`, tempFile).catch((e) => {
+        yield io.cp(__nccwpck_require__.ab + "docker/" + runtime, tempFile).catch((e) => {
             core.error(e);
         });
         return tempFile;
