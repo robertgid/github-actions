@@ -1,0 +1,23 @@
+name: 'get-event-information'
+description: 'Generating information used to create and publish images'
+inputs:
+  deployableBranches:
+    description: 'What source branches should be deployable?'
+    required: false
+    default: 'master,main,feat,fix,test'
+outputs:
+  group:
+    description: 'Group name of the image'
+  name:
+    description: 'Name of the image'
+  image-name:
+    description: 'Full name of the image used for uploading to image registry'
+  image-tag:
+    description: 'Tag name/version of the image'
+  namespace:
+    description: 'Namespace of the image'
+  release:
+    description: 'Should a release/deploy occur?'
+runs:
+  using: 'node16'
+  main: './dist/index.js'

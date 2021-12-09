@@ -1,0 +1,18 @@
+FROM registry.gitlab.com/globalid/infrastructure/container-images/node-16-builder:latest as builder
+ENV NODE_ENV development
+WORKDIR /app
+COPY ./ ./
+RUN npm ci
+RUN npm run build:lib && rm -rf node_modules
+RUN npm ci --only=production
+RUN rm -rf src deploy chart tests && find . -maxdepth 1 -type f -not -name 'package*' -delete
+
+FROM node:16-alpine3.14 as app
+## Copy built node modules and binaries without the dev toolchain
+ENV NODE_ENV production
+WORKDIR /app
+COPY --from=builder /app ./
+EXPOSE 8080
+USER node
+
+CMD npm run start
