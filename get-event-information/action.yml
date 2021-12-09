@@ -1,17 +1,10 @@
-name: 'image-name'
+name: 'get-event-information'
 description: 'Generating information used to create and publish images'
 inputs:
-  runtime:
-    description: 'What type of runtime'
+  deployableBranches:
+    description: 'What source branches should be deployable?'
     required: false
-    default: 'node16'
-  docker:
-    description: 'Are we building docker'
-    required: false
-    default: 'false'
-  dockerFile:
-    description: 'Path to the custom docker file'
-    required: false
+    default: 'master,main,feat,fix,test'
 outputs:
   group:
     description: 'Group name of the image'
@@ -23,8 +16,8 @@ outputs:
     description: 'Tag name/version of the image'
   namespace:
     description: 'Namespace of the image'
-  docker-file:
-    description: 'Path to the Dockerfile being used to generate the image'
+  release:
+    description: 'Should a release/deploy occur?'
 runs:
   using: 'node16'
   main: './dist/index.js'

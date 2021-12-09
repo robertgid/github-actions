@@ -1,0 +1,16 @@
+name: 'get-dockerfile'
+description: 'Preparing DockerFile'
+inputs:
+  runtime:
+    description: 'What type of runtime'
+    required: false
+    default: 'node16'
+  dockerFile:
+    description: 'Path to the custom docker file'
+    required: false
+outputs:
+  docker-file:
+    description: 'Path to the Dockerfile being used to generate the image'
+runs:
+  using: 'node16'
+  main: './dist/index.js'

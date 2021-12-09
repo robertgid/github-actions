@@ -11,7 +11,6 @@ module.exports = {
   ],
   env: {
     node: true,
-    jest: true,
   },
   extends: [
     'plugin:@globalid/node-svc',
