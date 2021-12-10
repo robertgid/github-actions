@@ -13,4 +13,4 @@ outputs:
     description: 'Path to the Dockerfile being used to generate the image'
 runs:
   using: 'node16'
-  main: './dist/index.js'
+  main: 'dist/index.js'
