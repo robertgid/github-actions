@@ -1,0 +1,141 @@
+name: "Gradle run"
+description: "Runs gradle tasks with preset and customizable arguments and flags"
+
+inputs:
+
+  gradle_task:
+    description: "The gradle task you wish to run"
+    type: string
+    required: true
+
+  globalid_maven_username:
+    description: "Username to access the internal maven repository"
+    required: true
+
+  globalid_maven_password:
+    description: "Password to access the internal maven repository"
+    required: true
+
+  gradle_workDir:
+    description: "Working directory, in which the gradle command will be executed"
+    type: string
+    required: false
+    default: ''
+    
+  gradle_flags:
+    description: "Additional gradle flags to add"
+    required: false
+    default: ''
+    
+  parallel:
+    description: "Set parallel build [true]"
+    type: boolean
+    required: false
+    default: true
+
+  build_cache:
+    description: "Set build cache enabled [false]"
+    type: string
+    required: false
+    default: 'false'
+
+  clean_build:
+    description: "WIP - Execute clean prior to running main task [false]"
+    type: boolean
+    required: false
+    default: false
+
+  sdk_download:
+    description: "Download sdk image -Pandroid.builder.sdkDownload [false]"
+    type: boolean
+    required: false
+    default: false
+
+  jvm_args:
+    description: "Jvm Args [-Xmx3g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -Dkotlin.daemon.jvm.options=-Xmx1g]"
+    type: string
+    required: false
+    default: '-Xmx3g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -Dkotlin.daemon.jvm.options=-Xmx1g'
+
+  java_home:
+    description: "Java home args [$JAVA_HOME_11_X64]"
+    type: string
+    required: false
+    default: $JAVA_HOME_11_X64
+
+  success_artefact_location:
+    description: "Location of the artefact to upload if previous step succeeded, upload will not commence if no value is provided [Optional]"
+    type: string
+    required: false
+    default: ''
+
+  success_artefact_name:
+    description: "Name of the uploaded artefact if previous step succeeded, upload will not commence if no value is provided [Optional]"
+    type: string
+    required: false
+    default: ''
+
+  failure_artefact_location:
+    description: "Location of the artefact to upload if previous step failed, upload will not commence if no value is provided [Optional]"
+    type: string
+    required: false
+    default: ''
+
+  failure_artefact_name:
+    description: "Name of the uploaded artefact if previous step failed, upload will not commence if no value is provided [Optional]"
+    type: string
+    required: false
+    default: ''
+
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout branch
+      uses: actions/checkout@v2
+
+    - name: Cache Gradle packages
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.gradle/caches
+          !~/.gradle/caches/build-cache-1
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+    - name: Gradle Build Cache
+      if: inputs.build_cache == 'true'
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.gradle/caches/build-cache-1
+        key: ${{ runner.os }}-gradle-build-cache-${{ hashFiles('**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-build-cache-
+    - name: Run Gradle task
+      working-directory: ./${{ inputs.gradle_workDir }}
+      shell: bash
+      run: >-
+        ./gradlew ${{ inputs.gradle_task }}
+        -Dorg.gradle.parallel=${{ inputs.parallel }}
+        -Dorg.gradle.caching=${{ inputs.build_cache }}
+        -Dorg.gradle.java.home=${{ inputs.java_home }}
+        -Dorg.gradle.jvmargs="${{ inputs.jvm_args }}"
+        -Pandroid.builder.sdkDownload=${{ inputs.sdk_download }}
+        -PglobalidMavenUsername=${{ inputs.globalid_maven_username }}
+        -PglobalidMavenPassword=${{ inputs.globalid_maven_password }}
+        ${{ inputs.gradle_flags }}
+    - name: Upload Failure Artefact
+      if: failure() && inputs.failure_artefact_location != '' && inputs.failure_artefact_name != ''
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ inputs.failure_artefact_name }}
+        path: ${{ inputs.failure_artefact_location }}
+
+    - name: Upload Artefact
+      if: inputs.success_artefact_location != '' && inputs.success_artefact_name != ''
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ inputs.success_artefact_name }}
+        path: ${{ inputs.success_artefact_location }}
