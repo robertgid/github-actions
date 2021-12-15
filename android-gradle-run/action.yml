@@ -87,11 +87,18 @@ inputs:
     required: false
     default: ''
 
+  checkout_branch:
+    description: "Should this action check out the branch"
+    type: string
+    required: false
+    default: 'true'
+
 
 runs:
   using: "composite"
   steps:
     - name: Checkout branch
+      if: inputs.checkout_branch == 'true'
       uses: actions/checkout@v2
 
     - name: Cache Gradle packages
