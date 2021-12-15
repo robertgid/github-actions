@@ -39,6 +39,12 @@ inputs:
     required: false
     default: 'false'
 
+  gradle_packages_cache:
+    description: "Set gradle packages cache enabled [false]"
+    type: string
+    required: false
+    default: 'true'
+
   clean_build:
     description: "WIP - Execute clean prior to running main task [false]"
     type: boolean
@@ -102,6 +108,7 @@ runs:
       uses: actions/checkout@v2
 
     - name: Cache Gradle packages
+      if: inputs.gradle_packages_cache == 'true'
       uses: actions/cache@v2
       with:
         path: |
