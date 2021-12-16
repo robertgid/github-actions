@@ -26,22 +26,22 @@ inputs:
   parallel:
     description: "Set parallel build [true]"
     required: false
-    default: true
+    default: 'true'
 
   build_cache:
     description: "Set build cache enabled [true]"
     required: false
-    default: true
+    default: 'true'
 
   gradle_packages_cache:
     description: "Set gradle packages cache enabled [true]"
     required: false
-    default: true
+    default: 'true'
 
   sdk_download:
     description: "Download sdk image -Pandroid.builder.sdkDownload [false]"
     required: false
-    default: false
+    default: 'false'
 
   jvm_args:
     description: "Jvm Args [-Xmx5g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -Dkotlin.daemon.jvm.options=-Xmx3g]"
@@ -91,7 +91,7 @@ inputs:
   checkout_branch:
     description: "Should this action check out the branch"
     required: false
-    default: true
+    default: 'true'
 
 
 runs:
@@ -99,11 +99,11 @@ runs:
   steps:
 
     - name: Checkout branch     
-      if: ${{ inputs.checkout_branch }}
+      if: inputs.checkout_branch == 'true'
       uses: actions/checkout@v2
 
     - name: Cache Gradle packages
-      if: ${{ inputs.gradle_packages_cache }}
+      if: inputs.gradle_packages_cache == 'true'
       uses: actions/cache@v2
       with:
         path: |
@@ -115,7 +115,7 @@ runs:
           ${{ runner.os }}-gradle-
 
     - name: Gradle Build Cache
-      if: ${{ inputs.build_cache }}
+      if: inputs.build_cache == 'true'
       uses: actions/cache@v2
       with:
         path: |
