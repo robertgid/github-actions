@@ -34,13 +34,13 @@ inputs:
     default: true
 
   build_cache:
-    description: "Set build cache enabled [false]"
+    description: "Set build cache enabled [true]"
     type: string
     required: false
-    default: 'false'
+    default: 'true'
 
   gradle_packages_cache:
-    description: "Set gradle packages cache enabled [false]"
+    description: "Set gradle packages cache enabled [true]"
     type: string
     required: false
     default: 'true'
@@ -94,11 +94,15 @@ inputs:
     default: ''
 
   checkout_branch:
-    description: "Should this action check out the branch"
+    description: "Should this action check out the branch [true]"
     type: string
     required: false
     default: 'true'
 
+outputs:
+  success_artefact_location:
+    description: 'Path to the success artefact location, if one is supplied in [inputs.success_artefact_location]'
+    value: ${{ steps.success_artefact_location_out.outputs.success_artefact_location }}
 
 runs:
   using: "composite"
@@ -153,3 +157,9 @@ runs:
       with:
         name: ${{ inputs.success_artefact_name }}
         path: ${{ inputs.success_artefact_location }}
+
+    - name: Set success artefact path output
+      id: success_artefact_location_out
+      shell: bash
+      run: echo "::set-output name=success_artefact_location::${{ inputs.success_artefact_location }}"
+
