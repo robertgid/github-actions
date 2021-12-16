@@ -1,0 +1,193 @@
+name: "Runs gradle Connected tests on an android eumulator"
+description: "Gradle run as a composite job"
+
+inputs:
+
+  gradle_task:
+    description: "The gradle task you wish to run"
+    required: true
+
+  device_api_level:
+    description: "Device api level"
+    required: true
+
+  globalid_maven_username:
+    description: "Username to access the internal maven repository"
+    required: true
+
+  globalid_maven_password:
+    description: "Password to access the internal maven repository"
+    required: true
+    
+  gradle_flags:
+    description: "Additional gradle flags to add"
+    default: ''
+
+  parallel:
+    description: "Set parallel build [true]"
+    required: false
+    default: true
+
+  build_cache:
+    description: "Set build cache enabled [true]"
+    required: false
+    default: true
+
+  gradle_packages_cache:
+    description: "Set gradle packages cache enabled [true]"
+    required: false
+    default: true
+
+  sdk_download:
+    description: "Download sdk image -Pandroid.builder.sdkDownload [false]"
+    required: false
+    default: false
+
+  jvm_args:
+    description: "Jvm Args [-Xmx5g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -Dkotlin.daemon.jvm.options=-Xmx3g]"
+    required: false
+    default: '-Xmx7g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -Dkotlin.daemon.jvm.options=-Xmx2g'
+
+  java_home:
+    description: "Java home args [$JAVA_HOME_11_X64]"
+    required: false
+    default: $JAVA_HOME_11_X64
+
+  device_target:
+    description: "Target of the system image - default, google_apis or playstore [default]"
+    required: false
+    default: 'default'
+
+  device_arch:
+    description: "CPU architecture of the system image - x86, x86_64 or arm64-v8a [x86]"
+    required: false
+    default: 'x86'
+
+  profile:
+    description: "Device profile on which the tests should run"
+    required: false
+    default: 'Galaxy Nexus'
+
+  success_artefact_location:
+    description: "Location of the artefact to upload if previous step succeeded, upload will not commence if no value is provided [Optional]"
+    required: false
+    default: ''
+
+  success_artefact_name:
+    description: "Name of the uploaded artefact if previous step succeeded, upload will not commence if no value is provided [Optional]"
+    required: false
+    default: ''
+
+  failure_artefact_location:
+    description: "Location of the artefact to upload if previous step failed, upload will not commence if no value is provided [Optional]"
+    required: false
+    default: ''
+
+  failure_artefact_name:
+    description: "Name of the uploaded artefact if previous step failed, upload will not commence if no value is provided [Optional]"
+    required: false
+    default: ''
+
+  checkout_branch:
+    description: "Should this action check out the branch"
+    required: false
+    default: true
+
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: Checkout branch     
+      if: ${{ inputs.checkout_branch }}
+      uses: actions/checkout@v2
+
+    - name: Cache Gradle packages
+      if: ${{ inputs.gradle_packages_cache }}
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.gradle/caches
+          !~/.gradle/caches/build-cache-1
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Gradle Build Cache
+      if: ${{ inputs.build_cache }}
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.gradle/caches/build-cache-1
+        key: ${{ runner.os }}-gradle-build-cache-${{ hashFiles('**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-build-cache-
+
+    - name: AVD cache
+      uses: actions/cache@v2
+      id: avd-cache
+      with:
+        path: |
+          ~/.android/avd/*
+          ~/.android/adb*
+        key: avd-v2-${{ inputs.device_api_level }}
+
+    - name: Create AVD and generate snapshot for caching
+      if: steps.avd-cache.outputs.cache-hit != 'true'
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: ${{ inputs.device_api_level }}
+        target: ${{ inputs.device_target }}
+        arch: ${{ inputs.device_arch }}
+        profile: ${{ inputs.profile }}
+        force-avd-creation: false
+        emulator-options: >-
+          -no-window
+          -gpu swiftshader_indirect
+          -noaudio
+          -no-boot-anim
+          -camera-back none
+        disable-animations: false
+        script: echo "Generated AVD snapshot for caching."
+
+    - name: Run tests
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: ${{ inputs.device_api_level }}
+        target: ${{ inputs.device_target }}
+        arch: ${{ inputs.device_arch }}
+        profile: ${{ inputs.profile }}
+        force-avd-creation: false
+        emulator-options: >-
+          -no-snapshot-save
+          -no-window
+          -gpu swiftshader_indirect
+          -noaudio
+          -no-boot-anim
+          -camera-back none
+        disable-animations: true
+        script: >-
+          ./gradlew ${{ inputs.gradle_task }}
+          -Dorg.gradle.parallel=${{ inputs.parallel }}
+          -Dorg.gradle.caching=${{ inputs.build_cache }}
+          -Dorg.gradle.java.home=${{ inputs.java_home }}
+          -Dorg.gradle.jvmargs="${{ inputs.jvm_args }}"
+          -Pandroid.builder.sdkDownload=${{ inputs.sdk_download }}
+          -PglobalidMavenUsername=${{ inputs.globalid_maven_username }}
+          -PglobalidMavenPassword=${{ inputs.globalid_maven_password }}
+          ${{ inputs.gradle_flags }}
+
+    - name: Upload Failure Artefact
+      if: ${{ failure() && inputs.failure_artefact_location != '' && inputs.failure_artefact_name != '' }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ inputs.failure_artefact_name }}
+        path: ${{ inputs.failure_artefact_location }}
+
+    - name: Upload Artefact
+      if: ${{ inputs.success_artefact_location != '' && inputs.success_artefact_name != '' }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ inputs.success_artefact_name }}
+        path: ${{ inputs.success_artefact_location }} 
