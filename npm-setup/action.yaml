@@ -22,5 +22,6 @@ runs:
         path: ./node_modules
         key: modules-${{ hashFiles('package-lock.json') }}
     - name: Install dependencies
+      shell: bash
       if: steps.cache.outputs.cache-hit != 'true'
       run: npm ci --ignore-scripts
