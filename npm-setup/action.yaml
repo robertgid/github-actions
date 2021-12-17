@@ -1,5 +1,9 @@
 name: npm-setup
 description: "Simple action to build a docker image and push it to repository"
+inputs:
+  npm-token:
+    description: 'NPM token'
+    required: true
 
 runs:
   using: composite
@@ -10,7 +14,7 @@ runs:
         node-version: '16'
         registry-url: 'https://registry.npmjs.org/'
       env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        NODE_AUTH_TOKEN: ${{ inputs.npm-token }}
     - name: Cache dependencies
       id: cache
       uses: actions/cache@v2
