@@ -16,7 +16,7 @@ runs:
         node-version: '16'
         registry-url: 'https://registry.npmjs.org/'
       env:
-        NODE_AUTH_TOKEN: ${{ secrets.npm-token }}
+        NODE_AUTH_TOKEN: ${{ inputs.npm-token }}
     - name: Cache dependencies
       id: cache
       uses: actions/cache@v2
