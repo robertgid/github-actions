@@ -122,6 +122,7 @@ runs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
+
     - name: Gradle Build Cache
       if: inputs.build_cache == 'true'
       uses: actions/cache@v2
@@ -131,6 +132,7 @@ runs:
         key: ${{ runner.os }}-gradle-build-cache-${{ hashFiles('**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-build-cache-
+
     - name: Run Gradle task
       working-directory: ./${{ inputs.gradle_workDir }}
       shell: bash
@@ -144,6 +146,7 @@ runs:
         -PglobalidMavenUsername=${{ inputs.globalid_maven_username }}
         -PglobalidMavenPassword=${{ inputs.globalid_maven_password }}
         ${{ inputs.gradle_flags }}
+        
     - name: Upload Failure Artefact
       if: failure() && inputs.failure_artefact_location != '' && inputs.failure_artefact_name != ''
       uses: actions/upload-artifact@v2
