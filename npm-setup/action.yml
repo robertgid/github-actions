@@ -4,9 +4,6 @@ inputs:
   NPM_TOKEN:
     description: 'NPM access token'
     required: true
-  GIT_TOKEN:
-    description: GITHUB token
-    required: true
 
 runs:
   using: composite
@@ -19,7 +16,7 @@ runs:
         node-version: '16'
         registry-url: 'https://registry.npmjs.org/'
       env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        NODE_AUTH_TOKEN: ${{ inputs.NPM_TOKEN }}
     - name: Cache dependencies
       id: cache
       uses: actions/cache@v2
@@ -27,5 +24,6 @@ runs:
         path: ./node_modules
         key: modules-${{ hashFiles('package-lock.json') }}
     - name: Install dependencies
+      shell: bash
       if: steps.cache.outputs.cache-hit != 'true'
       run: npm ci --ignore-scripts
