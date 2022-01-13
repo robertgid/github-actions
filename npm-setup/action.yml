@@ -1,0 +1,38 @@
+name: NPM setup
+description: "Simple action to get the nodejs and NPM enviroment"
+inputs:
+  NPM_TOKEN:
+    description: 'NPM access token'
+    required: true
+  GIT_TOKEN:
+    description: GITHUB token
+    required: true
+
+runs:
+  using: composite
+  name: Setup
+  runs-on: ubuntu-latest
+  container:
+    image: ghcr.io/globalid/container-images/node-16-builder:latest
+    credentials:
+      username: ${{ github.actor }}
+      password: ${{ secrets.GIT_TOKEN }}
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      id: npm-cache
+      with:
+        node-version: '16'
+        registry-url: 'https://registry.npmjs.org/'
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    - name: Cache dependencies
+      id: cache
+      uses: actions/cache@v2
+      with:
+        path: ./node_modules
+        key: modules-${{ hashFiles('package-lock.json') }}
+    - name: Install dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: npm ci --ignore-scripts
