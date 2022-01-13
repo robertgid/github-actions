@@ -24,10 +24,10 @@ runs:
         path: ./node_modules
         key: modules-${{ hashFiles('package-lock.json') }}
     - name: Install dependencies
-      shell: bash
+      shell: sh
       if: steps.cache.outputs.cache-hit != 'true'
       run: npm ci --ignore-scripts
     - run: npm run build:lib
-      shell: bash
+      shell: sh
     - run: npm test 
-      shell: bash
+      shell: sh
