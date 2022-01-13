@@ -10,13 +10,6 @@ inputs:
 
 runs:
   using: composite
-  name: Setup
-  runs-on: ubuntu-latest
-  container:
-    image: ghcr.io/globalid/container-images/node-16-builder:latest
-    credentials:
-      username: ${{ github.actor }}
-      password: ${{ secrets.GIT_TOKEN }}
   steps:
     - name: Checkout
       uses: actions/checkout@v2
