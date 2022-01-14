@@ -63,8 +63,8 @@ function run(): void {
     core.notice(`Ref: ${ref}, short ref: ${shortRef}`)
     const tagName = ref.startsWith('refs/tags') ? shortRef : github.context.sha
     let releaseType: string = ''
-    deploymentValues.eksDev.namespace = group
-    deploymentValues.eksStaging.namespace = group
+    // deploymentValues.eksDev.namespace = group
+    // deploymentValues.eksStaging.namespace = group
     let config: EnvironmentContext[] = []
     if (ref.startsWith('refs/tags') === true && tagFormat.test(tagName) === true) {
       if (releaseFormat.test(tagName) === true) {
