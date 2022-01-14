@@ -13,8 +13,8 @@ outputs:
     description: 'Namespace of the image'
   release-type:
     description: 'Release or prerelease?'
-  env-name:
-    description: 'Environment name'
+  deploy-config:
+    description: 'Deployment config for k8s'
 runs:
   using: 'node16'
   main: 'dist/index.js'
