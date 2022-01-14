@@ -26,6 +26,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+/* eslint-disable max-lines-per-function */
 const github = __importStar(__nccwpck_require__(5438));
 const core = __importStar(__nccwpck_require__(2186));
 const devBranches = new RegExp(/^refs\/heads\/(master|main|feat-.*)/);
@@ -35,6 +36,32 @@ const tagFormat = new RegExp(/^v([0-9]{1,}\.){2}[0-9]{1,}(-alpha\.[0-9]{1,})?/);
 const releaseFormat = new RegExp(/^v([0-9]{1,}\.){2}[0-9]{1,}$/);
 // eslint-disable-next-line unicorn/better-regex
 const prereleaseFormat = new RegExp(/^v([0-9]{1,}\.){2}[0-9]{1,}(-alpha\.[0-9]{1,})$/);
+const deploymentValues = {
+    eksDev: {
+        environment: 'eks-dev',
+        context: 'legacy-dev',
+        namespace: 'dev',
+        manifest: 'dev_manifest.yaml',
+    },
+    eksStaging: {
+        environment: 'eks-staging',
+        context: 'legacy-dev',
+        namespace: 'dev',
+        manifest: 'dev_manifest.yaml',
+    },
+    legacyDev: {
+        environment: 'legacy-dev',
+        context: 'legacy-dev',
+        namespace: 'dev',
+        manifest: 'dev_manifest.yaml',
+    },
+    legacyStg: {
+        environment: 'legacy-staging',
+        context: 'legacy-dev',
+        namespace: 'dev',
+        manifest: 'dev_manifest.yaml',
+    },
+};
 function run() {
     try {
         if (github.context.payload.repository === undefined) {
@@ -52,7 +79,9 @@ function run() {
         core.notice(`Ref: ${ref}, short ref: ${shortRef}`);
         const tagName = ref.startsWith('refs/tags') ? shortRef : github.context.sha;
         let releaseType = '';
-        let envName = '';
+        deploymentValues.eksDev.namespace = group;
+        deploymentValues.eksStaging.namespace = group;
+        let config = [];
         if (ref.startsWith('refs/tags') === true && tagFormat.test(tagName) === true) {
             if (releaseFormat.test(tagName) === true) {
                 releaseType = 'release';
@@ -60,10 +89,10 @@ function run() {
             else if (prereleaseFormat.test(tagName) === true) {
                 releaseType = 'prerelease';
             }
-            envName = 'stg';
+            config = getDeploymentConfig('staging');
         }
         else if (devBranches.test(ref)) {
-            envName = 'dev';
+            config = getDeploymentConfig('dev');
         }
         core.notice(`Group: ${group}`);
         core.notice(`Image name: ${imageName}`);
@@ -71,17 +100,27 @@ function run() {
         core.notice(`Tag name: ${tagName}`);
         core.notice(`Namespace: ${group}`);
         core.notice(`Release type: ${releaseType} - ${ref}`);
-        core.notice(`Environment name: ${envName}`);
+        core.notice(`Deploy config: ${JSON.stringify(config)}`);
         core.setOutput('group', group);
         core.setOutput('name', imageName);
         core.setOutput('image-name', fullImageName);
         core.setOutput('tag-name', tagName);
         core.setOutput('namespace', group);
         core.setOutput('release-type', releaseType);
-        core.setOutput('env-name', envName);
+        if (config.length > 0) {
+            core.setOutput('deploy-config', JSON.stringify(config));
+        }
     }
     catch (error) {
         core.setFailed(error.message);
+    }
+}
+function getDeploymentConfig(environment) {
+    switch (environment) {
+        case 'staging':
+            return [deploymentValues.legacyStg, deploymentValues.eksStaging];
+        default:
+            return [deploymentValues.legacyDev, deploymentValues.eksDev];
     }
 }
 run();
