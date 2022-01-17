@@ -37,7 +37,7 @@ const deploymentValues: Record<string, EnvironmentContext> = {
     manifest: 'dev_manifest.yaml',
   },
   legacyStg: {
-    environment: 'legacy-staging',
+    environment: 'legacy-stg',
     context: 'legacy-dev',
     namespace: 'dev',
     manifest: 'dev_manifest.yaml',

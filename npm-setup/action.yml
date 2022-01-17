@@ -28,6 +28,4 @@ runs:
       if: steps.cache.outputs.cache-hit != 'true'
       run: npm ci --ignore-scripts
     - shell: sh
-      run: npm run build:lib
-    - shell: sh
-      run: npm test 
+      run: npm run build
