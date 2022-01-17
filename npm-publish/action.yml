@@ -1,9 +1,6 @@
 name: NPM publish
 description: "Simple action to publish package on NPM"
 inputs:
-  NPM_TOKEN:
-    description: 'NPM access token'
-    required: true
   RELEASE_VERSION:
     description: 'Version to release'
     required: true
@@ -18,9 +15,9 @@ runs:
       env:
         VERSION: ${{ inputs.RELEASE_VERSION }}
       run: npm version --no-git-tag-version --allow-same-version $VERSION
-    - if: ${{ RELEASE_TYPE == 'release' }}
+    - if: ${{ inputs.RELEASE_TYPE == 'release' }}
       shell: sh
       run: npm publish
-    - if: ${{ RELEASE_TYPE == 'prerelease' }}
+    - if: ${{ inputs.RELEASE_TYPE == 'prerelease' }}
       shell: sh
       run: npm publish --tag alpha
