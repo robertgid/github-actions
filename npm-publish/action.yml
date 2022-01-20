@@ -17,15 +17,14 @@ runs:
   steps:
     - shell: sh
       env:
-        SRC_FOLDER: ${{ inputs.SRC_FOLDER }}
-      run: cd $SRC_FOLDER
-    - shell: sh
-      env:
         VERSION: ${{ inputs.RELEASE_VERSION }}
-      run: npm version --no-git-tag-version --allow-same-version $VERSION
+        SRC_FOLDER: ${{ inputs.SRC_FOLDER }}
+      run: cd $SRC_FOLDER && npm version --no-git-tag-version --allow-same-version $VERSION
     - if: ${{ inputs.RELEASE_TYPE == 'release' }}
+      env:
+        SRC_FOLDER: ${{ inputs.SRC_FOLDER }}
       shell: sh
-      run: npm publish
+      run: cd $SRC_FOLDER && npm version && echo "Release" && ls -la
     - if: ${{ inputs.RELEASE_TYPE == 'prerelease' }}
       shell: sh
-      run: npm publish --tag alpha
+      run: cd $SRC_FOLDER && npm version && echo "Prerelease" && ls -la
