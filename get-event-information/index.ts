@@ -18,6 +18,13 @@ interface EnvironmentContext {
 }
 
 const deploymentValues: Record<string, EnvironmentContext> = {
+  legacyDev: {
+    environment: 'legacy-dev',
+    context: 'legacy-dev',
+    namespace: 'dev',
+    manifest: 'dev_manifest.yaml',
+  },
+  // TODO BOTTOM ONES
   eksDev: {
     environment: 'eks-dev',
     context: 'legacy-dev',
@@ -26,12 +33,6 @@ const deploymentValues: Record<string, EnvironmentContext> = {
   },
   eksStaging: {
     environment: 'eks-staging',
-    context: 'legacy-dev',
-    namespace: 'dev',
-    manifest: 'dev_manifest.yaml',
-  },
-  legacyDev: {
-    environment: 'legacy-dev',
     context: 'legacy-dev',
     namespace: 'dev',
     manifest: 'dev_manifest.yaml',
@@ -63,8 +64,8 @@ function run(): void {
     core.notice(`Ref: ${ref}, short ref: ${shortRef}`)
     const tagName = ref.startsWith('refs/tags') ? shortRef : github.context.sha
     let releaseType: string = ''
-    // deploymentValues.eksDev.namespace = group
-    // deploymentValues.eksStaging.namespace = group
+    // TODO deploymentValues.eksDev.namespace = group
+    // TODO deploymentValues.eksStaging.namespace = group
     let config: EnvironmentContext[] = []
     if (ref.startsWith('refs/tags') === true && tagFormat.test(tagName) === true) {
       if (releaseFormat.test(tagName) === true) {
