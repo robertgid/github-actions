@@ -1,6 +1,9 @@
 name: NPM publish
 description: "Simple action to publish package on NPM"
 inputs:
+  NPM_TOKEN:
+    description: 'NPM access token'
+    required: true
   RELEASE_VERSION:
     description: 'Version to release'
     required: true
@@ -11,7 +14,6 @@ inputs:
     description: 'Source folder of the package'
     default: '.'
     type: 'string'
-
 runs:
   using: composite
   steps:
@@ -23,10 +25,12 @@ runs:
     - if: ${{ inputs.RELEASE_TYPE == 'release' }}
       env:
         FOLDER: ${{ inputs.SRC_FOLDER }}
+        NODE_AUTH_TOKEN: ${{ inputs.NPM_TOKEN }}
       shell: sh
       run: cd $FOLDER && npm publish
     - if: ${{ inputs.RELEASE_TYPE == 'prerelease' }}
       env:
         FOLDER: ${{ inputs.SRC_FOLDER }}
+        NODE_AUTH_TOKEN: ${{ inputs.NPM_TOKEN }}
       shell: sh
       run: cd $FOLDER && npm publish --tag alpha
