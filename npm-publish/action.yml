@@ -11,6 +11,7 @@ inputs:
     description: 'Source folder of the package'
     default: '.'
     type: 'string'
+
 runs:
   using: composite
   steps:
