@@ -24,9 +24,9 @@ runs:
       env:
         FOLDER: ${{ inputs.SRC_FOLDER }}
       shell: sh
-      run: cd $FOLDER && npm version && echo "Release" && ls -la $FOLDER
+      run: cd $FOLDER && npm version && echo "Release" && ls -la
     - if: ${{ inputs.RELEASE_TYPE == 'prerelease' }}
       env:
         FOLDER: ${{ inputs.SRC_FOLDER }}
       shell: sh
-      run: cd $FOLDER && npm version && echo "Prerelease" && ls -la $FOLDER
+      run: cd $FOLDER && npm version && echo "Prerelease" && ls -la
