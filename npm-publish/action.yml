@@ -18,13 +18,13 @@ runs:
     - shell: sh
       env:
         VERSION: ${{ inputs.RELEASE_VERSION }}
-        SRC_FOLDER: ${{ inputs.SRC_FOLDER }}
-      run: cd $SRC_FOLDER && npm version --no-git-tag-version --allow-same-version $VERSION
+        FOLDER: ${{ inputs.SRC_FOLDER }}
+      run: cd $FOLDER && npm version --no-git-tag-version --allow-same-version $VERSION
     - if: ${{ inputs.RELEASE_TYPE == 'release' }}
       env:
-        SRC_FOLDER: ${{ inputs.SRC_FOLDER }}
+        FOLDER: ${{ inputs.SRC_FOLDER }}
       shell: sh
-      run: cd $SRC_FOLDER && npm version && echo "Release" && ls -la
+      run: cd $FOLDER && npm version && echo "Release" && ls -la $FOLDER
     - if: ${{ inputs.RELEASE_TYPE == 'prerelease' }}
       shell: sh
-      run: cd $SRC_FOLDER && npm version && echo "Prerelease" && ls -la
+      run: cd $FOLDER && npm version && echo "Prerelease" && ls -la $FOLDER
