@@ -39,4 +39,4 @@ runs:
     - shell: sh
       env:
         FOLDER: ${{ inputs.SRC_FOLDER }}
-      run: npm run build
+      run: cd $FOLDER && npm run build
