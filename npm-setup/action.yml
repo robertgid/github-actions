@@ -4,6 +4,10 @@ inputs:
   NPM_TOKEN:
     description: 'NPM access token'
     required: true
+  SRC_FOLDER:
+    description: 'Source folder of the package'
+    default: '.'
+    type: 'string'
 
 runs:
   using: composite
@@ -24,11 +28,14 @@ runs:
         path: |
           ./node_modules
           ./exposed_src
+          ./target
         key: modules-${{ hashFiles('package-lock.json') }}
     - name: Install dependencies
-      shell: sh
       if: steps.cache.outputs.cache-hit != 'true'
-      run: npm ci --ignore-scripts
-    - shell: sh
+      env:
+        FOLDER: ${{ inputs.SRC_FOLDER }}
+      run: cd $FOLDER && npm ci --ignore-scripts
+    - env:
+        FOLDER: ${{ inputs.SRC_FOLDER }}
       # run: npm run build # TODO
-      run: npm run build:lib && npm run build:sdk
+      run: cd $FOLDER && npm run build:lib && npm run build:sdk
