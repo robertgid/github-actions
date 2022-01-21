@@ -39,5 +39,4 @@ runs:
     - shell: sh
       env:
         FOLDER: ${{ inputs.SRC_FOLDER }}
-      # run: npm run build # TODO
-      run: cd $FOLDER && npm run build:lib && npm run build:sdk
+      run: npm run build
