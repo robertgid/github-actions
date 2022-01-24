@@ -37,29 +37,23 @@ const releaseFormat = new RegExp(/^v([0-9]{1,}\.){2}[0-9]{1,}$/);
 // eslint-disable-next-line unicorn/better-regex
 const prereleaseFormat = new RegExp(/^v([0-9]{1,}\.){2}[0-9]{1,}(-alpha\.[0-9]{1,})$/);
 const deploymentValues = {
-    eksDev: {
-        environment: 'eks-dev',
-        context: 'legacy-dev',
-        namespace: 'dev',
-        manifest: 'dev_manifest.yaml',
-    },
-    eksStaging: {
-        environment: 'eks-staging',
-        context: 'legacy-dev',
-        namespace: 'dev',
-        manifest: 'dev_manifest.yaml',
-    },
     legacyDev: {
         environment: 'legacy-dev',
         context: 'legacy-dev',
         namespace: 'dev',
         manifest: 'dev_manifest.yaml',
     },
-    legacyStg: {
-        environment: 'legacy-staging',
-        context: 'legacy-dev',
+    eksDev: {
+        environment: 'eks-dev',
+        context: 'new-dev',
         namespace: 'dev',
-        manifest: 'dev_manifest.yaml',
+        manifest: 'eks_dev_manifest.yaml',
+    },
+    legacyStg: {
+        environment: 'legacy-stg',
+        context: 'legacy-stg',
+        namespace: 'staging',
+        manifest: 'stg_manifest.yaml',
     },
 };
 function run() {
@@ -79,8 +73,7 @@ function run() {
         core.notice(`Ref: ${ref}, short ref: ${shortRef}`);
         const tagName = ref.startsWith('refs/tags') ? shortRef : github.context.sha;
         let releaseType = '';
-        // deploymentValues.eksDev.namespace = group
-        // deploymentValues.eksStaging.namespace = group
+        deploymentValues.eksDev.namespace = group;
         let config = [];
         if (ref.startsWith('refs/tags') === true && tagFormat.test(tagName) === true) {
             if (releaseFormat.test(tagName) === true) {
@@ -118,7 +111,7 @@ function run() {
 function getDeploymentConfig(environment) {
     switch (environment) {
         case 'staging':
-            return [deploymentValues.legacyStg, deploymentValues.eksStaging];
+            return [deploymentValues.legacyStg];
         default:
             return [deploymentValues.legacyDev, deploymentValues.eksDev];
     }
