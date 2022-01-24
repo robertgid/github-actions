@@ -24,24 +24,17 @@ const deploymentValues: Record<string, EnvironmentContext> = {
     namespace: 'dev',
     manifest: 'dev_manifest.yaml',
   },
-  // TODO BOTTOM ONES
   eksDev: {
     environment: 'eks-dev',
-    context: 'legacy-dev',
+    context: 'new-dev',
     namespace: 'dev',
-    manifest: 'dev_manifest.yaml',
-  },
-  eksStaging: {
-    environment: 'eks-staging',
-    context: 'legacy-dev',
-    namespace: 'dev',
-    manifest: 'dev_manifest.yaml',
+    manifest: 'eks_dev_manifest.yaml',
   },
   legacyStg: {
     environment: 'legacy-stg',
-    context: 'legacy-dev',
-    namespace: 'dev',
-    manifest: 'dev_manifest.yaml',
+    context: 'legacy-stg',
+    namespace: 'staging',
+    manifest: 'stg_manifest.yaml',
   },
 }
 
@@ -64,8 +57,7 @@ function run(): void {
     core.notice(`Ref: ${ref}, short ref: ${shortRef}`)
     const tagName = ref.startsWith('refs/tags') ? shortRef : github.context.sha
     let releaseType: string = ''
-    // TODO deploymentValues.eksDev.namespace = group
-    // TODO deploymentValues.eksStaging.namespace = group
+    deploymentValues.eksDev.namespace = group
     let config: EnvironmentContext[] = []
     if (ref.startsWith('refs/tags') === true && tagFormat.test(tagName) === true) {
       if (releaseFormat.test(tagName) === true) {
@@ -103,7 +95,7 @@ function run(): void {
 function getDeploymentConfig(environment: string): EnvironmentContext[] {
   switch (environment) {
     case 'staging':
-      return [deploymentValues.legacyStg, deploymentValues.eksStaging]
+      return [deploymentValues.legacyStg]
     default:
       return [deploymentValues.legacyDev, deploymentValues.eksDev]
   }
