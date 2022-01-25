@@ -4,12 +4,6 @@ inputs:
   NPM_TOKEN:
     description: 'NPM access token'
     required: true
-  RELEASE_VERSION:
-    description: 'Version to release'
-    required: true
-  RELEASE_TYPE:
-    description: 'Type of release'
-    required: true
   SRC_FOLDER:
     description: 'Source folder of the package'
     default: './exposed_src'
@@ -18,16 +12,22 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Populate metadata
+      id: repo-meta
+      uses: globalid/github-actions/get-event-information@main
     - uses: globalid/github-actions/npm-setup@main
+      if: ${{ steps.repo-meta.outputs.release-type }}
       with:
         NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
     - uses: globalid/github-actions/npm-setup@main
+      if: ${{ steps.repo-meta.outputs.release-type }}
       with:
         NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
         SRC_FOLDER: ${{ inputs.SRC_FOLDER }}
     - uses: globalid/github-actions/npm-publish@main
+      if: ${{ steps.repo-meta.outputs.release-type }}
       with:
         SRC_FOLDER: ${{ inputs.SRC_FOLDER }}
-        RELEASE_VERSION: ${{ inputs.RELEASE_VERSION }}
-        RELEASE_TYPE: ${{ inputs.RELEASE_TYPE }}
+        RELEASE_VERSION: ${{ steps.repo-meta.outputs.tag-name }}
+        RELEASE_TYPE: ${{ steps.repo-meta.outputs.release-type }}
 
