@@ -1,0 +1,33 @@
+name: Publish service SDK
+description: "Simple action to publish the nodejs service SDK"
+inputs:
+  NPM_TOKEN:
+    description: 'NPM access token'
+    required: true
+  RELEASE_VERSION:
+    description: 'Version to release'
+    required: true
+  RELEASE_TYPE:
+    description: 'Type of release'
+    required: true
+  SRC_FOLDER:
+    description: 'Source folder of the package'
+    default: './exposed_src'
+    type: 'string'
+
+runs:
+  using: composite
+  steps:
+    - uses: globalid/github-actions/npm-setup@main
+      with:
+        NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
+    - uses: globalid/github-actions/npm-setup@main
+      with:
+        NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
+        SRC_FOLDER: ${{ inputs.SRC_FOLDER }}
+    - uses: globalid/github-actions/npm-publish@main
+      with:
+        SRC_FOLDER: ${{ inputs.SRC_FOLDER }}
+        RELEASE_VERSION: ${{ inputs.RELEASE_VERSION }}
+        RELEASE_TYPE: ${{ inputs.RELEASE_TYPE }}
+
