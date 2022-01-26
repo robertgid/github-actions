@@ -1,4 +1,4 @@
-FROM registry.gitlab.com/globalid/infrastructure/container-images/node-16-builder:latest as builder
+FROM ghcr.io/globalid/container-images/node-16-builder:latest as builder
 ENV NODE_ENV development
 WORKDIR /app
 COPY ./ ./
