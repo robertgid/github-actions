@@ -59,10 +59,10 @@ function run(): void {
     let releaseType: string = ''
     deploymentValues.eksDev.namespace = group
     let config: EnvironmentContext[] = []
-    if (ref.startsWith('refs/tags') === true && tagFormat.test(tagName) === true) {
-      if (releaseFormat.test(tagName) === true) {
+    if (ref.startsWith('refs/tags') && tagFormat.test(tagName)) {
+      if (releaseFormat.test(tagName)) {
         releaseType = 'release'
-      } else if (prereleaseFormat.test(tagName) === true) {
+      } else if (prereleaseFormat.test(tagName)) {
         releaseType = 'prerelease'
       }
       config = getDeploymentConfig('staging')
@@ -97,7 +97,8 @@ function getDeploymentConfig(environment: string): EnvironmentContext[] {
     case 'staging':
       return [deploymentValues.legacyStg]
     default:
-      return [deploymentValues.legacyDev, deploymentValues.eksDev]
+      //return [deploymentValues.legacyDev, deploymentValues.eksDev]
+      return [deploymentValues.legacyDev]
   }
 }
 
